@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+
+	<!-- <bean id="adresseDao" class="fr.adaming.spanc.dao.impl.AdresseDaoImpl"/> 
+		<bean id="adresseService" class="fr.adaming.spanc.services.impl.AdresseServiceImpl"> 
+		<property name="dao" ref="adresseDao"></property> </bean> -->
+
+	<bean id="usagerDao" class="fr.adaming.spanc.dao.impl.UsagerDaoImpl" />
+	<bean id="usagerService" class="fr.adaming.spanc.services.impl.UsagerServiceImpl">
+		<property name="dao" ref="usagerDao"></property>
+	</bean>
+
+	<bean id="encoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+		<constructor-arg value="12"></constructor-arg>
+	</bean>
+
+	<bean id="datasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+		<property name="url" value="jdbc:mysql://localhost/spanc_sens"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value=""></property>
+	</bean>
+	<bean id="PersistenceUnitManager"
+		class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+		<property name="defaultDataSource" ref="datasource"></property>
+		<property name="persistenceXmlLocations">
+			<list>
+				<value>classpath*:META-INF/persistence.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="EntityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitManager" ref="PersistenceUnitManager"></property>
+		<property name="persistenceUnitName" value="SPANC_SENS"></property>
+	</bean>
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="EntityManagerFactory"></property>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<context:annotation-config></context:annotation-config>
+
+	<!-- Mise en place de la sécurité avec Spring security Version DAO -->
+
+	<security:http pattern="/resources/**" security="none" />
+	<security:http pattern="/Login" security="none"></security:http>
+
+<!-- Mémo : problème d'affichage du message d'erreur au moment de la connexion, regarder dans : -->
+<!-- 1) Login.jsp pour voir si les balises sont bien affichées et que la syntaxe est respectée -->
+<!-- 2) ioc.jsp pour vérifier que les éléments pour la redirection de l'erreur de connexion est mise en place -->
+<!-- 3) Maven pour regarder si les dépendances sont bien téléchargées -->
+<!-- 4) web.xml pour regarder s'il n'y a pas de redirection à mettre en place si erreur -->
+
+	<security:http auto-config="true"> <!-- use-expressions="true" -->
+		<security:form-login login-page="/Login"
+			authentication-failure-url="/Login" default-target-url="/" />
+		<security:form-login login-page="/Login"
+			default-target-url="/" authentication-failure-url="/Login?error=true" />
+		<security:intercept-url pattern="/**" access="ROLE_ADMIN" />
+<!-- 		<security:intercept-url pattern="/banque/**" -->
+<!-- 			access="hasRole('ROLE_ADMIN')" /> l'admin a le droit à l'accès à toute l'appli -->
+<!-- 		<security:intercept-url pattern="/Employe/**" -->
+<!-- 			access="hasAnyRole('ROLE_ADMIN','ROLE_EMPLOYE')" /> L'employe a le droit à l'accès à l'appli côté employe -->
+	</security:http>
+
+	<security:authentication-manager>
+		<security:authentication-provider>
+ 			<security:password-encoder ref="encoder" />
+			<security:jdbc-user-service
+				data-source-ref="datasource"
+				users-by-username-query="select identifiant,motDePasse,actif from user where identifiant=?"
+				authorities-by-username-query="select u.identifiant,r.nomRole from user u, role r where u.idUser = r.fk_user and u.identifiant =? " />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+
+</beans>

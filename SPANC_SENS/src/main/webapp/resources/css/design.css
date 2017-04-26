@@ -1,0 +1,84 @@
+html
+{
+	height: 100%;
+}
+body
+{
+	min-height: 100%;
+}
+#corps {
+	margin: auto !important;
+	width: 80% !important;
+	font-family: "Century Gothic", CenturyGothic !important;
+	text-align : center !important;
+}
+.navbar-inverse {
+	background-image: url("../images/Logo-2016.png") !important;
+	background-repeat: no-repeat !important;
+	background-heigth: 100% !important;
+	background-position: left !important;
+	height: 180px !important;
+	background-color: white !important;
+	border: none !important;
+	border-radius: 0px !important;
+	border-bottom: 1px solid gainsboro !important;
+}
+
+nav a {
+	color: grey !important;
+}
+
+nav a:hover {
+	color: black !important;
+	font-weight: bold !important;
+}
+
+#navBar {
+	padding-top: 130px !important;
+	padding-left: 100px;
+	vertical-align: baseline !important;
+}
+header h1
+{
+	text-align : center;
+}
+footer
+{
+	text-align : center !important;
+	padding : 20px;
+	height : 20%;
+	background-color : deepskyblue;
+	opacity : 0.6;
+	position: absolute; bottom: 0; left: 0; right: 0;
+}
+footer p
+{
+	/* padding-top : 60px; */
+	opacity: 1 !important;
+}
+* {-moz-box-sizing: border-box; box-sizing: border-box;}
+
+
+@media ( max-width : 767px) {
+	#myNavBar {
+		border: 1px solid gainsboro !important;
+		background-color: white !important;
+	}
+	.navbar-inverse .navbar-toggle {
+		border-color: darkgrey !important;
+		margin-top: 7px;
+		background-color: lightskyblue;
+	}
+	.navbar-inverse .navbar-toggle:focus,.navbar-inverse .navbar-toggle:hover
+		{
+		background-color: deepskyblue !important;
+	}
+	header h1
+	{
+		font-size : 180% !important;
+	}
+	#corps h3
+	{
+		font-size : 1.6em !important;
+	}
+}
